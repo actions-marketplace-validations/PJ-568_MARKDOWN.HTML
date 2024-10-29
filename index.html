@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
-<!-- v 0.0.2 -->
+<!-- v 0.0.3 -->
 
 <head>
     <meta charset="utf-8">
@@ -131,7 +131,7 @@
                     if (response.ok) {
                         const markdown = await response.text();
                         var content = marked.parse(markdown);
-                        content = `<blockquote><code>${absolutePath}</code></blockquote>${content}`;
+                        content = `<blockquote><code>${decodeURIComponent(absolutePath)}</code></blockquote>${content}`;
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(content, 'text/html');
                         const links = doc.querySelectorAll('a[href$=".md"]');
