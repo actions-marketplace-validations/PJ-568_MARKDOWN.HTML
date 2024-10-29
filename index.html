@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
-<!-- v 0.0.3 -->
+<!-- v 0.0.4 -->
 
 <head>
     <meta charset="utf-8">
@@ -246,10 +246,6 @@
             background-color: #DCEDC8;
         }
 
-        html {
-            background-color: #e6e6e6;
-        }
-
         body {
             margin: 0;
         }
@@ -263,7 +259,18 @@
         a:hover {
             color: #2E7D32;
         }
-
+        
+        /* 背景 */
+        .background {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            z-index: -1;
+            background-color: #e6e6e6;
+        }
+        
         /* 导航栏 */
         nav {
             position: fixed;
@@ -412,6 +419,7 @@
 </head>
 
 <body>
+    <div class="background"></div>
     <!-- 导航栏 -->
     <nav>
         <a title="主页" id="to-home"><i class="fa fa-home"></i></a>
