@@ -2,6 +2,7 @@
 <html lang="zh-Hans">
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
+<!-- v 0.0.1 -->
 
 <head>
     <meta charset="utf-8">
@@ -87,7 +88,7 @@
                     };
                     var darkmode = new Darkmode();
                     document.body.addEventListener('click', function (event) {
-                        if (event.target.id === 'dark_b') {
+                        if (event.target.closest('#dark_b')) {
                             try {
                                 darkmode.toggle();
                             } catch (e) {
