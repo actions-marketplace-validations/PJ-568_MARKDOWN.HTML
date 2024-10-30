@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
-<!-- v 0.0.4 -->
+<!-- v 0.0.5 -->
 
 <head>
     <meta charset="utf-8">
@@ -229,7 +229,7 @@
             document.addEventListener('pjax:complete', function () {
                 updatePValue();
                 initContent();
-                // translate.execute();    // 手动触发翻译，但是理论上 translate-js 会监听页面变化，所以注释。
+                translate.execute();    // 手动触发翻译，但是理论上 translate-js 会监听页面变化
                 endLoad();
             })
         })();
