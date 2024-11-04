@@ -2,7 +2,8 @@
 <html lang="zh-Hans">
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
-<!-- v 0.1.0 -->
+<!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
+<!-- v 0.2.0 -->
 
 <head>
   <meta charset="utf-8">
@@ -157,43 +158,44 @@
       }
 
       // 根据指定文件读取并解析
-      const showMarkdown = async (path) => {
+      const showMarkdown = async (path, response = null) => {
         try {
           const absolutePath = new URL(path, 'http://example.com').pathname;
-          const response = await fetch(absolutePath);
-          if (response.ok) {
-            const markdown = await response.text();
-            var content = marked.parse(markdown);
-            content = `<blockquote><code>${decodeURIComponent(absolutePath)}</code></blockquote>${content}`;
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(content, 'text/html');
-            const links = doc.querySelectorAll('a[href$=".md"]');
-            links.forEach(link => {
-              var href = link.getAttribute('href');
-              /* 
-                  如果 href 是相对路径，则在其前加上当前读取的文档的绝对路径；
-                  如果不存在当前读取的文档（默认读取的 index.md 或 README.md），
-                  则在其前加上 markdown.html 的绝对路径。
-               */
-              if (isRelativePath(href)) {
-                if (pValue) {
-                  href = getDirectory(absolutePath) + href;
-                } else {
-                  href = getPath() + href;
-                }
-                const absoluteHref = new URL(href, 'http://example.com').pathname;
-                link.setAttribute('href', `${window.location.pathname}?p=${absoluteHref}`);
-              } else if (href.startsWith('/')) {
-                link.setAttribute('href', `${window.location.pathname}?p=${href}`);
-              }
-            });
-            content = doc.body.innerHTML;
-            document.getElementById('c').innerHTML = content;
-            const firstH1 = document.querySelector('h1');
-            document.title = firstH1 ? firstH1.textContent : absolutePath;
-          } else {
-            throw new Error('请求失败');
+          if (!response) {
+            response = await fetch(absolutePath);
+            if (!response.ok) {
+              throw new Error('请求失败');
+            }
           }
+          const markdown = await response.text();
+          var content = marked.parse(markdown);
+          content = `<blockquote><code>${decodeURIComponent(absolutePath)}</code></blockquote>${content}`;
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(content, 'text/html');
+          const links = doc.querySelectorAll('a[href$=".md"]');
+          links.forEach(link => {
+            var href = link.getAttribute('href');
+            /* 
+              如果 href 是相对路径，则在其前加上当前读取的文档的绝对路径；
+              如果不存在当前读取的文档（默认读取的 index.md 或 README.md），
+              则在其前加上 markdown.html 的绝对路径。
+             */
+            if (isRelativePath(href)) {
+              if (pValue) {
+                href = getDirectory(absolutePath) + href;
+              } else {
+                href = getPath() + href;
+              }
+              const absoluteHref = new URL(href, 'http://example.com').pathname;
+              link.setAttribute('href', `${window.location.pathname}?p=${absoluteHref}`);
+            } else if (href.startsWith('/')) {
+              link.setAttribute('href', `${window.location.pathname}?p=${href}`);
+            }
+          });
+          content = doc.body.innerHTML;
+          document.getElementById('c').innerHTML = content;
+          const firstH1 = document.querySelector('h1');
+          document.title = firstH1 ? firstH1.textContent : absolutePath;
         } catch (error) {
           document.getElementById('c').innerHTML = '<h1>加载失败</h1><p><a href="">重试</a></p>';
           console.error(error);
@@ -226,7 +228,7 @@
           } else {
             const response = await fetch(getPath() + 'index.md');
             if (response.ok) {
-              await showMarkdown(getPath() + 'index.md');
+              await showMarkdown(getPath() + 'index.md', response);
             } else {
               await showMarkdown(getPath() + 'README.md');
             }
