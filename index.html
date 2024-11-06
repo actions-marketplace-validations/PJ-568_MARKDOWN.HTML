@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 0.2.0 -->
+<!-- v 0.3.0 -->
 
 <head>
   <meta charset="utf-8">
@@ -121,6 +121,54 @@
         }
       }
 
+      //// 检查并提示翻译
+      function infoTranslate() {
+        try {
+          var currentLang = translate.language.getCurrent();
+          var originalLang = translate.language.getLocal();
+          if (currentLang !== originalLang) {
+            const translateInfo = document.querySelectorAll('#translate-info');
+            if (translateInfo) {
+              translateInfo.forEach(function (item) {
+                item.remove();
+              })
+            }
+            // 获取 #c 元素
+            var mainElements = document.querySelector('#c');
+            var bq = document.createElement('blockquote');
+            bq.id = 'translate-info';
+
+            var infoBody = document.createElement('p');
+            infoBody.innerText = '当前页面为翻译版本。';
+            var msgBody = document.createElement('p');
+
+            var langIcon = document.createElement('i');
+            langIcon.classList.add('fa');
+            langIcon.classList.add('fa-language');
+
+            var switchButton = document.createElement('a');
+            switchButton.href = 'javascript:;';
+            switchButton.title = '切换到原语言';
+            switchButton.innerText = ' 切换到文章原本的语言';
+
+            msgBody.appendChild(langIcon);
+            msgBody.appendChild(switchButton);
+
+            bq.appendChild(infoBody);
+            bq.appendChild(msgBody);
+
+            mainElements.insertBefore(bq, mainElements.children[1]);
+
+            switchButton.addEventListener('click', function () {
+              translate.changeLanguage(originalLang);
+            });
+            translate.execute();
+          }
+        } catch (e) {
+          console.error('检查并提示翻译出错：' + e);
+        }
+      }
+
       // 更新 p 值
       function updatePValue() {
         url = new URL(window.location.href);
@@ -196,6 +244,7 @@
           document.getElementById('c').innerHTML = content;
           const firstH1 = document.querySelector('h1');
           document.title = firstH1 ? firstH1.textContent : absolutePath;
+          infoTranslate();	//// 检查并提示翻译
         } catch (error) {
           document.getElementById('c').innerHTML = '<h1>加载失败</h1><p><a href="">重试</a></p>';
           console.error(error);
