@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 0.3.1 -->
+<!-- v 0.4.0 -->
 
 <head>
   <meta charset="utf-8">
@@ -257,10 +257,12 @@
           const link = event.target.closest('a[href$=".md"]');
           if (link) {
             try {
-              event.preventDefault();
-              startLoad();
-              showMarkdown(decodePath(link.href));
-              history.pushState({ url: link.href, title: document.title, uid: link.href }, null, link.href);
+              if (history && history.pushState) {
+                event.preventDefault();
+                startLoad();
+                showMarkdown(decodePath(link.href));
+                history.pushState({ url: link.href, title: document.title, uid: link.href }, null, link.href);
+              }
             } catch (e) {
               console.error('自定义 Pjax 出错：' + e);
             }
