@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 0.6.3 -->
+<!-- v 0.7.0 -->
 
 <head>
   <meta charset="utf-8">
@@ -23,6 +23,7 @@
       var timer = null;
 
       // 文档解析功能相关
+      var existIndexPage = true;  // 是否存在索引页
       var url = new URL(window.location.href);
       var params = new URLSearchParams(url.search);
       var pValue = formatPath(params.get('p'));
@@ -317,9 +318,14 @@
           if (pValue) {
             await showMarkdown(pValue);
           } else {
-            const response = await fetch(getPath() + 'index.md');
-            if (response.ok) {
-              await showMarkdown(getPath() + 'index.md', response);
+            if (existIndexPage) {
+              const response = await fetch(getPath() + 'index.md');
+              if (response.ok) {
+                await showMarkdown(getPath() + 'index.md', response);
+              } else {
+                existIndexPage = false;
+                await showMarkdown(getPath() + 'README.md');
+              }
             } else {
               await showMarkdown(getPath() + 'README.md');
             }
