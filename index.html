@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 0.8.0 -->
+<!-- v 0.9.0 -->
 
 <head>
   <meta charset="utf-8">
@@ -28,6 +28,9 @@
 
       // Pjax 相关
       let pjax;
+
+      // 深色模式相关
+      let darkmode;
 
       // 自定义 PJAX 相关
       const existPushState = (history && history.pushState);
@@ -101,23 +104,6 @@
         }
       }
 
-      // 初始化返回按钮
-      function initBackBtn() {
-        try {
-          document.querySelector('nav').addEventListener('click', function (event) {
-            if (event.target.closest('#back-btn')) {
-              try {
-                window.history.back();
-              } catch (e) {
-                console.error('返回按钮出错：' + e);
-              }
-            }
-          });
-        } catch (e) {
-          console.error('初始化返回按钮出错：' + e);
-        }
-      }
-
       // Darkmode.js 深色模式
       function initDarkmode() {
         try {
@@ -125,16 +111,7 @@
             console.warn('Darkmode.js 不存在？');
             return;
           };
-          var darkmode = new Darkmode();
-          document.querySelector('nav').addEventListener('click', function (event) {
-            if (event.target.closest('#dark_b')) {
-              try {
-                darkmode.toggle();
-              } catch (e) {
-                console.error('Darkmode.js 出错：' + e);
-              }
-            }
-          });
+          darkmode = new Darkmode();
         } catch (e) {
           console.error('初始化 Darkmode.js 出错：' + e);
         }
@@ -166,6 +143,7 @@
             langIcon.classList.add('fa-language');
 
             var switchButton = document.createElement('a');
+            switchButton.id = 'translate-switch';
             switchButton.href = 'javascript:;';
             switchButton.title = '切换到原语言';
             switchButton.innerText = ' 切换到文章原本的语言';
@@ -177,10 +155,6 @@
             bq.appendChild(msgBody);
 
             mainElements.insertBefore(bq, mainElements.children[1]);
-
-            switchButton.addEventListener('click', function () {
-              translate.changeLanguage(originalLang);
-            });
           }
         } catch (e) {
           console.error('检查并提示翻译出错：' + e);
@@ -336,7 +310,6 @@
       // 初始化
       function initialize() {
         initDarkmode();	//// 初始化深色模式
-        initBackBtn();	//// 初始化返回按钮
         initHomeBtn();	//// 初始化返回首页按钮
         initContent();	//// 初始化内容
         initTranslate();	//// 初始化页面翻译
@@ -364,7 +337,17 @@
         initContent();
         translate.execute();    // 手动触发翻译，但是理论上 translate-js 会监听页面变化
         initCostumedPjax();	//// 初始化自定义 PJAX
-      })
+      });
+      //// 点击事件委托
+      document.addEventListener('click', function(event) {
+        if (event.target.closest('#back-btn')) {
+          window.history.back();
+        } else if (event.target.closest('#dark_b')) {
+          darkmode.toggle();
+        } else if (event.target.closest('#translate-switch')) {
+          translate.changeLanguage(translate.language.getLocal());
+        }
+      });
       //// 文档内容加载完毕时触发
       function showMarkdownEnded() {
         refreshTranslate();
