@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 0.9.0 -->
+<!-- v 0.9.1 -->
 
 <head>
   <meta charset="utf-8">
@@ -24,7 +24,9 @@
 
       // 文档解析功能相关
       var existIndexPage = true;  // 是否存在索引页
-      const pValue = formatPath(decodePath(window.location.href));
+      function getPValue() {
+        return formatPath(decodePath(window.location.href));
+      }
 
       // Pjax 相关
       let pjax;
@@ -222,7 +224,7 @@
               则在其前加上 markdown.html 的绝对路径。
              */
             if (isRelativePath(href)) {
-              if (pValue) {
+              if (getPValue()) {
                 href = getDirectory(path) + href;
               } else {
                 href = getPath() + href;
@@ -281,6 +283,7 @@
       // 初始化内容
       const initContent = async () => {
         try {
+          const pValue = getPValue();
           if (pValue) {
             await showMarkdown(pValue);
           } else {
