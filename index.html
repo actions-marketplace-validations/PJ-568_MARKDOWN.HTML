@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 1.1.0 -->
+<!-- v 1.2.0 -->
 
 <head>
   <meta charset="utf-8">
@@ -13,7 +13,6 @@
   <script src="//lib.baomitu.com/pjax/0.2.8/pjax.min.js" type="text/javascript"></script>
   <script src="//lib.baomitu.com/translate.js/3.7.2/translate.js" type="text/javascript"></script>
   <script src="//lib.baomitu.com/Darkmode.js/1.5.7/darkmode-js.min.js" type="text/javascript"></script>
-  <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/font-awesome/6.0.0/css/all.min.css">
   <script>
     // 使用 IIFE 包裹以避免全局变量污染
     (function () {
@@ -499,7 +498,7 @@
 
     nav a {
       color: #FAFAFA;
-      padding: .5rem;
+      padding: .3rem;
       transition:
         color .2s,
         background-color .2s;
@@ -663,8 +662,8 @@
     }
 
     /* 深色模式相关 */
-    .darkmode--activated img,
-    .darkmode--activated svg {
+    .darkmode--activated #c img,
+    .darkmode--activated #c svg {
       isolation: isolate;
       mix-blend-mode: difference
     }
@@ -696,12 +695,55 @@
 <body>
   <!-- 导航栏 -->
   <nav>
-    <a title="返回" id="back-btn"><i class="fa fa-backward"></i></a>
-    <a title="刷新" id="refresh-btn" href=""><i class="fa fa-arrows-rotate"></i></a>
-    <a title="主页" id="to-home"><i class="fa fa-home"></i></a>
-    <a title="更改语言" id="translate"><i class="fa fa-language"></i></a>
-    <a title="切换显示模式" id="dark_b" href="javascript:;"><i class="fa fa-adjust"></i></a>
-    <a title="关于" href="https://github.com/PJ-568/markdown.html/"><i class="fa fa-info-circle"></i></a>
+    <a title="返回" id="back-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-back">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M9 11l-4 4l4 4m-4 -4h11a4 4 0 0 0 0 -8h-1" />
+      </svg></a>
+    <a title="刷新" id="refresh-btn" href=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-refresh">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+        <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+      </svg></a>
+    <a title="主页" id="to-home"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="icon icon-tabler icons-tabler-outline icon-tabler-home">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+        <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+        <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+      </svg></a>
+    <a title="更改语言" id="translate"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="icon icon-tabler icons-tabler-outline icon-tabler-language">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M4 5h7" />
+        <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+        <path d="M5 9c0 2.144 2.952 3.908 6.7 4" />
+        <path d="M12 20l4 -9l4 9" />
+        <path d="M19.1 18h-6.2" />
+      </svg></a>
+    <a title="切换显示模式" id="dark_b" href="javascript:;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brightness">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+        <path d="M12 3l0 18" />
+        <path d="M12 9l4.65 -4.65" />
+        <path d="M12 14.3l7.37 -7.37" />
+        <path d="M12 19.6l8.85 -8.85" />
+      </svg></a>
+    <a title="关于" href="https://github.com/PJ-568/markdown.html/"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+        <path d="M12 9h.01" />
+        <path d="M11 12h1v4h1" />
+      </svg></a>
   </nav>
 
   <!-- 内容主体 -->

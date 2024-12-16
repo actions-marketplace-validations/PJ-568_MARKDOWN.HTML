@@ -35,7 +35,7 @@
 
 |名称|协议|地址|
 |:-:|:--|:--|
-|font-awesome|[SIL OFL 1.1](http://scripts.sil.org/OFL)|[https://fontawesome.com/v4/license/](https://fontawesome.com/v4/license/)|
+|tabler-icons|[MIT License](//mit-license.org)|[https://github.com/tabler/tabler-icons](https://github.com/tabler/tabler-icons)|
 |markedjs/marked|[marked License](https://github.com/markedjs/marked/blob/master/LICENSE.md)|[Github](https://github.com/markedjs/marked)|
 |translate.js|[Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)|[Github](https://github.com/xnx3/translate)、[Gitee](https://gitee.com/mail_osc/translate)|
 |darkmode.js|[MIT license](//mit-license.org)|[Github](https://github.com/sandoche/Darkmode.js)|
