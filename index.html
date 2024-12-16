@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 1.0.1 -->
+<!-- v 1.1.0 -->
 
 <head>
   <meta charset="utf-8">
@@ -257,6 +257,43 @@
 
       // 读取并解析指定文件
       const getMarkdown = async (mdPath, response = null) => {
+        // 生成目录
+        function generateOutline(doc) {
+          let outline = '<ul>';
+          let headings = Array.from(doc.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+          let stack = [];
+
+          headings.forEach(heading => {
+            let level = parseInt(heading.tagName.charAt(1));
+            // let id = heading.textContent.toLowerCase().replace(/ /g, '-').replace(/[^\w-]/g, '');
+
+            // 设置 id 属性以便链接跳转
+            heading.setAttribute('id', heading.textContent);
+
+            while (stack.length > 0 && stack[stack.length - 1].level >= level) {
+              stack.pop();
+              outline += '</ul></li>';
+            }
+
+            if (stack.length === 0 || stack[stack.length - 1].level < level) {
+              outline += '<li><ul>';
+            } else {
+              outline += '</li><li>';
+            }
+
+            outline += `<a href="#${heading.textContent}">${heading.textContent}</a>`;
+            stack.push({ level: level });
+          });
+
+          while (stack.length > 0) {
+            outline += '</ul></li>';
+            stack.pop();
+          }
+
+          outline += '</ul>';
+          return outline;
+        }
+
         if (!response) {
           response = await fetch(mdPath);
           if (!response.ok) {
@@ -264,9 +301,13 @@
           }
         }
         var content = marked.parse(await response.text());
-        content = `<pre><code>${decodeURIComponent(mdPath)}</code></pre><hr>${content}`;
+        content = `<details class="outline"><summary><code>${decodeURIComponent(mdPath)}</code></summary></details><hr>${content}`;
         const parser = new DOMParser();
         const doc = parser.parseFromString(content, 'text/html');
+
+        const outline = generateOutline(doc);
+        doc.querySelector('.outline').innerHTML += outline;
+
         const links = doc.querySelectorAll('a[href$=".md"]');
         const pValue = await getPValue()
         links.forEach(link => {
@@ -505,10 +546,15 @@
       background-color: rgba(255, 255, 255, 0.1);
     }
 
+    #c ul,
+    #c ol {
+      padding-left: 2rem;
+    }
+
     #c pre {
       background-color: rgba(0, 0, 0, 0.05);
       padding: .4rem;
-      border-radius: .5rem;
+      border-radius: .1rem;
       overflow-y: scroll;
     }
 
@@ -527,7 +573,23 @@
       background-color: rgba(0, 0, 0, 0.05);
       font-size: small;
       padding: .4rem;
+      margin: .5rem 2rem;
       border-left: 5px solid rgba(0, 0, 0, 0.1);
+    }
+
+    #c details {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: .1rem;
+    }
+
+    #c summary {
+      background-color: rgba(0, 0, 0, 0.05);
+      padding: .4rem;
+      font-weight: bold;
+    }
+
+    #c details a {
+      margin-left: -2rem;
     }
 
     #c table {
