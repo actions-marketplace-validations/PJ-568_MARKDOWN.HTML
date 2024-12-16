@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.5.0" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.6.0" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
@@ -15,6 +15,8 @@
   <script>
     // 使用 IIFE 包裹以避免全局变量污染
     (function () {
+      const about = '# 关于\n\n## MARKDOWN.HTML\n\n旨在提供低依赖、一键部署的 Markdown 网页渲染方案。\n\n详情请访问 [GitHub](https://github.com/PJ-568/MARKDOWN.HTML) 或 [Gitee](https://gitee.com/PJ-568/MARKDOWN.HTML) 仓库。\n\n';
+
       // 加载动画相关
       var timer = null;
 
@@ -169,7 +171,7 @@
       }
 
       // 获取 markdown.html 的当前路径
-      const getPath = getDirectory(window.location);
+      function getPath() { return getDirectory(window.location); };
 
       // 将 ?p= 后面的值转换为绝对路径
       /* 
@@ -208,6 +210,8 @@
       async function handleError(errorMessage) {
         document.title = '加载失败'
         document.querySelector('.markdown-body').innerHTML = `<h1>加载失败</h1><p>加载文档<code>${await getPValue()}</code>时出错：<code>${errorMessage}</code>。您可以尝试<a class="refresh-btn" href="">重新加载</a>或<a class="back-btn">返回</a>。</p>`;
+        customPushState(window.location.origin + window.location.pathname + '?p=error.md');
+        endLoad();
       }
 
       // 更新页面的 markdown 内容
@@ -218,21 +222,45 @@
       const showMarkdown = async (mdPath, response = null) => {
         if (mdPath === null) {
           var path = null;
+          const currentPath = getPath();
           // 如果存在 index.md 文件，则返回 index.md，否则返回 README.md
           if (notExistIndexPage) {
-            path = getPath + 'README.md';
+            path = currentPath + 'README.md';
           } else if (notExistIndexPage === false) {
-            path = getPath + 'index.md';
+            path = currentPath + 'index.md';
           } else {
             response = await fetch(getPath + 'index.md');
             if (response.ok) {
               notExistIndexPage = false;
-              path = getPath + 'index.md';
+              path = currentPath + 'index.md';
             } else {
               response = null;
               notExistIndexPage = true;
-              path = getPath + 'README.md';
+              path = currentPath + 'README.md';
             }
+          }
+        } else if (mdPath.endsWith('about.md')) {
+          response = await fetch(mdPath);
+          if (response.ok) {
+            var r_text = await response.text();
+            const content = about + await r_text.replace(/^# .*/m, '');
+            response = {
+              ok: true,
+              status: 200,
+              statusText: '自生成。',
+              text: async () => {
+                return content;
+              }
+            };
+          } else {
+            response = {
+              ok: true,
+              status: 200,
+              statusText: '自生成。',
+              text: async () => {
+                return about;
+              }
+            };
           }
         }
         try {
@@ -316,7 +344,7 @@
             if (pValue) {
               href = getDirectory(mdPath) + href;
             } else {
-              href = getPath + href;
+              href = getPath() + href;
             }
             const absoluteHref = new URL(href, 'http://example.com').pathname;
             link.setAttribute('href', `${window.location.pathname}?p=${absoluteHref}`);
@@ -766,7 +794,7 @@
         <path d="M12 19.6l8.85 -8.85" />
       </svg>
     </a>
-    <a title="关于" href="https://github.com/PJ-568/markdown.html/">
+    <a title="关于" href="?p=about.md">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle">
