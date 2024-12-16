@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 1.3.0 -->
+<!-- v 1.4.0 -->
 
 <head>
   <meta charset="utf-8">
@@ -254,15 +254,18 @@
       const getMarkdown = async (mdPath, response = null) => {
         // 生成目录
         function generateOutline(doc) {
-          let outline = '<ul>';
-          let headings = Array.from(doc.querySelectorAll('h1, h2, h3, h4, h5, h6'));
-          let stack = [];
+          var outline = '<ul>';
+          const headings = Array.from(doc.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+          var stack = [];
 
           headings.forEach(heading => {
-            let level = parseInt(heading.tagName.charAt(1));
+            const level = parseInt(heading.tagName.charAt(1));
+            const id = heading.textContent.toLowerCase()
+              .replace(/ /g, '-') // 将空格替换为连字符
+              .replace(/[^\w\u4e00-\u9fa5-]/g, ''); // 保留字母、数字、下划线、中文字符和连字符
 
             // 设置 id 属性以便链接跳转
-            heading.setAttribute('id', heading.textContent);
+            heading.setAttribute('id', id);
 
             while (stack.length > 0 && stack[stack.length - 1].level >= level) {
               stack.pop();
@@ -275,7 +278,7 @@
               outline += '</li><li>';
             }
 
-            outline += `<a href="#${heading.textContent}">${heading.textContent}</a>`;
+            outline += `<a href="#${id}">${heading.textContent}</a>`;
             stack.push({ level: level });
           });
 
@@ -416,6 +419,20 @@
           darkmode.toggle();
         } else if (event.target.closest('.translate-switch')) {
           translate.changeLanguage(translate.language.getLocal());
+        } else if (event.target.closest('.outline a[href]')) {
+          // 目录平滑移动
+          const href = event.target.getAttribute('href');
+          if (href !== '#' && href.startsWith('#')) {
+            event.preventDefault();
+            const targetElement = document.querySelector(href);
+            if (targetElement) {
+              targetElement.scrollIntoView({
+                behavior: 'smooth'
+              });
+            } else {
+              console.error(`ID 为 ${targetId} 的元素不存在。`);
+            }
+          }
         }
       });
       //// 文档内容加载完毕时触发
