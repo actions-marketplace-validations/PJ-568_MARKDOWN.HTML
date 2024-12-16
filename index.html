@@ -3,7 +3,7 @@
 <!-- 作者：PJ568 -->
 <!-- 项目地址：https://github.com/PJ-568/markdown.html/ -->
 <!-- 本项目遵循 CC BY-SA 4.0 International 许可协议 -->
-<!-- v 1.2.0 -->
+<!-- v 1.2.1 -->
 
 <head>
   <meta charset="utf-8">
@@ -78,7 +78,7 @@
           PJAX = new Pjax({
             selectors: [
               'head title',
-              '#c',
+              '.markdown-body',
               '.pjax-reload'
             ],
             cacheBust: false
@@ -122,36 +122,29 @@
           var currentLang = translate.language.getCurrent();
           var originalLang = translate.language.getLocal();
           if (currentLang !== originalLang) {
-            const translateInfo = document.querySelectorAll('#translate-info');
+            const translateInfo = document.querySelectorAll('.translate-info');
             if (translateInfo) {
               translateInfo.forEach(function (item) {
                 item.remove();
               })
             }
-            // 获取 #c 元素
-            var mainElements = document.querySelector('#c');
+            // 获取 .markdown-body 元素
+            var mainElements = document.querySelector('.markdown-body');
             var bq = document.createElement('blockquote');
-            bq.id = 'translate-info';
+            bq.classList.add('translate-info');
 
             var infoBody = document.createElement('p');
-            infoBody.innerText = '当前页面为翻译版本。';
+            infoBody.innerText = '当前页面已翻译。您可以：';
             var msgBody = document.createElement('p');
 
-            var langIcon = document.createElement('i');
-            langIcon.classList.add('fa');
-            langIcon.classList.add('fa-language');
-
             var switchButton = document.createElement('a');
-            switchButton.id = 'translate-switch';
+            switchButton.classList.add('translate-switch');
             switchButton.href = 'javascript:;';
             switchButton.title = '切换到原语言';
-            switchButton.innerText = ' 切换到文章原本的语言';
-
-            msgBody.appendChild(langIcon);
-            msgBody.appendChild(switchButton);
+            switchButton.innerText = '切换到文章原本的语言';
 
             bq.appendChild(infoBody);
-            bq.appendChild(msgBody);
+            bq.appendChild(switchButton);
 
             mainElements.insertBefore(bq, mainElements.children[1]);
           }
@@ -233,7 +226,7 @@
       // 处理错误
       async function handleError(errorMessage) {
         document.title = '加载失败'
-        document.getElementById('c').innerHTML = `<h1>加载失败</h1><p>加载文档<code>${await getPValue()}</code>时出错：<code>${errorMessage}</code>。您可以尝试<a href="">重新加载</a>或<a id="back-btn">返回</a>。</p>`;
+        document.querySelector('.markdown-body').innerHTML = `<h1>加载失败</h1><p>加载文档<code>${await getPValue()}</code>时出错：<code>${errorMessage}</code>。您可以尝试<a class="refresh-btn" href="">重新加载</a>或<a class="back-btn">返回</a>。</p>`;
       }
 
       // 更新页面的 markdown 内容
@@ -244,7 +237,7 @@
       const showMarkdown = async (mdPath, response = null) => {
         try {
           const content = await getMarkdown(mdPath, response);
-          document.getElementById('c').innerHTML = content;
+          document.querySelector('.markdown-body').innerHTML = content;
           const firstH1 = document.querySelector('h1');
           document.title = firstH1 ? firstH1.textContent : mdPath;
           showMarkdownEnded();
@@ -264,7 +257,6 @@
 
           headings.forEach(heading => {
             let level = parseInt(heading.tagName.charAt(1));
-            // let id = heading.textContent.toLowerCase().replace(/ /g, '-').replace(/[^\w-]/g, '');
 
             // 设置 id 属性以便链接跳转
             heading.setAttribute('id', heading.textContent);
@@ -344,7 +336,7 @@
         }
         // 监听自定义链接的点击事件
         if (existPushState) {
-          document.querySelector('#c').addEventListener('click', async function (event) {
+          document.querySelector('.markdown-body').addEventListener('click', async function (event) {
             const link = event.target.closest('a[href$=".md"]');
             if (link) {
               try {
@@ -382,7 +374,7 @@
 
       // 初始化返回首页按钮
       function initHomeBtn() {
-        const homeBtn = document.getElementById('to-home');
+        const homeBtn = document.querySelector('.to-home');
         homeBtn.href = window.location.pathname;
       }
 
@@ -413,13 +405,13 @@
       });
       //// 点击事件委托
       document.addEventListener('click', function (event) {
-        if (event.target.closest('#back-btn')) {
+        if (event.target.closest('.back-btn')) {
           window.history.back();
-        } else if (event.target.closest('#refresh-btn')) {
+        } else if (event.target.closest('.refresh-btn')) {
           window.location.reload();
-        } else if (event.target.closest('#dark_b')) {
+        } else if (event.target.closest('.dark-btn')) {
           darkmode.toggle();
-        } else if (event.target.closest('#translate-switch')) {
+        } else if (event.target.closest('.translate-switch')) {
           translate.changeLanguage(translate.language.getLocal());
         }
       });
@@ -510,7 +502,7 @@
     }
 
     /* 主要内容 */
-    #c {
+    .markdown-body {
       margin: 3rem auto;
       width: 100%;
       max-width: 950px;
@@ -523,52 +515,52 @@
       box-shadow: 0 2px 6px rgba(100, 100, 100, .3);
     }
 
-    #c img,
-    #c video,
-    #c iframe,
-    #c object,
-    #c embed,
-    #c svg,
-    #c canvas,
-    #c audio {
+    .markdown-body img,
+    .markdown-body video,
+    .markdown-body iframe,
+    .markdown-body object,
+    .markdown-body embed,
+    .markdown-body svg,
+    .markdown-body canvas,
+    .markdown-body audio {
       max-width: 100%;
     }
 
     /* Markdown 样式 */
-    #c a {
+    .markdown-body a {
       transition:
         color .2s,
         background-color .2s;
     }
 
-    #c a:hover {
+    .markdown-body a:hover {
       background-color: rgba(255, 255, 255, 0.1);
     }
 
-    #c ul,
-    #c ol {
+    .markdown-body ul,
+    .markdown-body ol {
       padding-left: 2rem;
     }
 
-    #c pre {
+    .markdown-body pre {
       background-color: rgba(0, 0, 0, 0.05);
       padding: .4rem;
       border-radius: .1rem;
       overflow-y: scroll;
     }
 
-    #c code {
+    .markdown-body code {
       font-family: "cousine nerd font mono", monospace;
     }
 
-    #c p code {
+    .markdown-body p code {
       background-color: rgba(0, 0, 0, 0.05);
       font-size: small;
       padding: .2rem;
       border-radius: .1rem;
     }
 
-    #c blockquote {
+    .markdown-body blockquote {
       background-color: rgba(0, 0, 0, 0.05);
       font-size: small;
       padding: .4rem;
@@ -576,22 +568,22 @@
       border-left: 5px solid rgba(0, 0, 0, 0.1);
     }
 
-    #c details {
+    .markdown-body details {
       border: 1px solid rgba(0, 0, 0, 0.1);
       border-radius: .1rem;
     }
 
-    #c summary {
+    .markdown-body summary {
       background-color: rgba(0, 0, 0, 0.05);
       padding: .4rem;
       font-weight: bold;
     }
 
-    #c details a {
+    .markdown-body details a {
       margin-left: -2rem;
     }
 
-    #c table {
+    .markdown-body table {
       border-spacing: 0;
       border-radius: .1rem;
       width: 100%;
@@ -599,22 +591,22 @@
       border: .1rem solid rgba(0, 0, 0, 0.05);
     }
 
-    #c table td,
-    #c table th {
+    .markdown-body table td,
+    .markdown-body table th {
       border-right: .1rem solid rgba(0, 0, 0, 0.05);
     }
 
-    #c table td,
-    #c table th {
+    .markdown-body table td,
+    .markdown-body table th {
       border-top: .1rem solid rgba(0, 0, 0, 0.05);
     }
 
-    #c table td:last-child,
-    #c th:last-child {
+    .markdown-body table td:last-child,
+    .markdown-body th:last-child {
       border-right-color: transparent;
     }
 
-    #c table thead tr:first-child>* {
+    .markdown-body table thead tr:first-child>* {
       border-top: .1rem solid transparent;
     }
 
@@ -662,8 +654,8 @@
     }
 
     /* 深色模式相关 */
-    .darkmode--activated #c img,
-    .darkmode--activated #c svg {
+    .darkmode--activated .markdown-body img,
+    .darkmode--activated .markdown-body svg {
       isolation: isolate;
       mix-blend-mode: difference
     }
@@ -678,11 +670,11 @@
 
       html,
       body,
-      #c {
+      .markdown-body {
         height: 100%;
       }
 
-      #c {
+      .markdown-body {
         overflow-y: scroll;
         min-width: 256px;
         top: 0;
@@ -695,29 +687,36 @@
 <body>
   <!-- 导航栏 -->
   <nav>
-    <a title="返回" id="back-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+    <a title="返回" class="back-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-back">
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
         <path d="M9 11l-4 4l4 4m-4 -4h11a4 4 0 0 0 0 -8h-1" />
-      </svg></a>
-    <a title="刷新" id="refresh-btn" href=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-refresh">
+      </svg>
+    </a>
+    <a title="刷新" class="refresh-btn" href="">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="icon icon-tabler icons-tabler-outline icon-tabler-refresh">
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
         <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
         <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-      </svg></a>
-    <a title="主页" id="to-home"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      </svg>
+    </a>
+    <a title="主页" class="to-home">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         class="icon icon-tabler icons-tabler-outline icon-tabler-home">
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
         <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
         <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
         <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-      </svg></a>
-    <a title="更改语言" id="translate"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      </svg>
+    </a>
+    <a title="更改语言" id="translate">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         class="icon icon-tabler icons-tabler-outline icon-tabler-language">
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
         <path d="M4 5h7" />
@@ -725,29 +724,34 @@
         <path d="M5 9c0 2.144 2.952 3.908 6.7 4" />
         <path d="M12 20l4 -9l4 9" />
         <path d="M19.1 18h-6.2" />
-      </svg></a>
-    <a title="切换显示模式" id="dark_b" href="javascript:;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brightness">
+      </svg>
+    </a>
+    <a title="切换显示模式" class="dark-btn" href="javascript:;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="icon icon-tabler icons-tabler-outline icon-tabler-brightness">
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
         <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
         <path d="M12 3l0 18" />
         <path d="M12 9l4.65 -4.65" />
         <path d="M12 14.3l7.37 -7.37" />
         <path d="M12 19.6l8.85 -8.85" />
-      </svg></a>
-    <a title="关于" href="https://github.com/PJ-568/markdown.html/"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle">
+      </svg>
+    </a>
+    <a title="关于" href="https://github.com/PJ-568/markdown.html/">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle">
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
         <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
         <path d="M12 9h.01" />
         <path d="M11 12h1v4h1" />
-      </svg></a>
+      </svg>
+    </a>
   </nav>
 
   <!-- 内容主体 -->
-  <div id="c">
+  <div class="markdown-body">
     <h1>加载中……</h1>
     <p>请稍等。</p>
   </div>
