@@ -23,6 +23,7 @@ This project aims to provide a low-dependency, simple deployment solution for re
 ## Code or Content Contributions
 
 We welcome contributions of code and content from anyone interested in this project.
+Please checkout [程序逻辑](doc/logic.md).
 
 For a simpler way to contribute, please refer to the [Contribution Guide](CONTRIBUTING.md) for relevant information.
 

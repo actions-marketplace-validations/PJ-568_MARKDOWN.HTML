@@ -1,0 +1,40 @@
+# 程序逻辑
+
+- 初始化
+  - 初始化深色模式 (`initDarkmode`)
+  - 初始化返回首页按钮 (`initHomeBtn`)
+  - 初始化内容 (`initContent`)
+    - 显示 Markdown (`showMarkdown`)
+      - 获取 Markdown 路径 (`getPValue`)
+      - 解码 Markdown 路径 (`decodeMDPath`)
+      - 格式化路径 (`formatMDPath`)
+      - 获取 Markdown 内容 (`getMarkdown`)
+        - 解析 Markdown (`marked.parse`)
+        - 处理内部链接
+      - 更新页面内容
+      - 自定义推送状态 (`customPushState`)
+  - 初始化页面翻译 (`initTranslate`)
+  - 初始化 PJAX (`initPJAX`)
+  - 初始化自定义 PJAX (`initCustomPJAX`)
+    - 覆写 PJAX 处理响应的函数
+    - 监听自定义链接的点击事件
+- 事件监听
+  - 网页加载完毕 (`DOMContentLoaded`)
+  - PJAX 开始 (`pjax:send`)
+    - 开始加载动画 (`startLoad`)
+  - PJAX 完成 (`pjax:complete`)
+    - 初始化自定义 PJAX (`initCustomPJAX`)
+  - 点击事件委托
+    - 返回上一页 (`#back-btn`)
+    - 刷新页面 (`#refresh-btn`)
+    - 切换深色模式 (`#dark_b`)
+    - 切换语言 (`#translate-switch`)
+- 文档内容加载完毕 (`showMarkdownEnded`)
+  - 刷新翻译 (`refreshTranslate`)
+  - 检查并提示翻译 (`infoTranslate`)
+  - 执行翻译 (`translate.execute`)
+  - 结束加载动画 (`endLoad`)
+  - 添加 `loaded` 类
+  - 平滑滚动到顶部
+- 浏览器返回 (`onpopstate`)
+  - 更新层级 (`level`)
