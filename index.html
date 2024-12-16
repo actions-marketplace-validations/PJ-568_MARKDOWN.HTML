@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.6.0" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.6.1" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
@@ -170,7 +170,7 @@
         return path.substring(0, lastSlashIndex + 1);
       }
 
-      // 获取 markdown.html 的当前路径
+      // 获取 markdown.html 当前所加载的 md 文件的所在路径
       function getPath() { return getDirectory(window.location); };
 
       // 将 ?p= 后面的值转换为绝对路径
@@ -192,6 +192,9 @@
        */
       function formatMDPath(mdPath) {
         if (mdPath) {
+          if (isRelativePath(mdPath)) {
+            mdPath = getPath() + mdPath;
+          }
           mdPath = new URL(mdPath, 'http://example.com').pathname;
           if (!mdPath.endsWith('.md')) {
             if (!mdPath.endsWith('/')) {
@@ -240,6 +243,7 @@
             }
           }
         } else if (mdPath.endsWith('about.md')) {
+          // 特殊处理 about.md
           response = await fetch(mdPath);
           if (response.ok) {
             var r_text = await response.text();
@@ -258,7 +262,7 @@
               status: 200,
               statusText: '自生成。',
               text: async () => {
-                return about;
+                return about + '*无更多详细信息*\n';
               }
             };
           }
@@ -324,6 +328,9 @@
           }
         }
         var content = marked.parse(await response.text());
+        if (content === '') {
+          content = '<i>空文件</i>';
+        }
         content = `<details class="outline"><summary><code>${decodeURIComponent(mdPath)}</code></summary></details><hr>${content}`;
         const parser = new DOMParser();
         const doc = parser.parseFromString(content, 'text/html');
@@ -414,10 +421,17 @@
         homeBtn.href = window.location.pathname;
       }
 
+      // 初始化返回首页按钮
+      function initAboutBtn() {
+        const aboutBtn = document.querySelector('.about-btn');
+        aboutBtn.href = `?p=${getDirectory(window.location.pathname)}about.md`;
+      }
+
       // 初始化
       function initialize() {
         initDarkmode();	//// 初始化深色模式
         initHomeBtn();	//// 初始化返回首页按钮
+        initAboutBtn();	//// 初始化关于按钮
         initContent();	//// 初始化内容
         initTranslate();	//// 初始化页面翻译
         initPJAX();	//// 初始化 PJAX
@@ -794,7 +808,7 @@
         <path d="M12 19.6l8.85 -8.85" />
       </svg>
     </a>
-    <a title="关于" href="?p=about.md">
+    <a title="关于" class="about-btn">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle">
