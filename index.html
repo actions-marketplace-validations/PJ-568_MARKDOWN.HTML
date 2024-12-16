@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.6.1" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.6.2" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
@@ -15,7 +15,16 @@
   <script>
     // 使用 IIFE 包裹以避免全局变量污染
     (function () {
-      const about = '# 关于\n\n## MARKDOWN.HTML\n\n旨在提供低依赖、一键部署的 Markdown 网页渲染方案。\n\n详情请访问 [GitHub](https://github.com/PJ-568/MARKDOWN.HTML) 或 [Gitee](https://gitee.com/PJ-568/MARKDOWN.HTML) 仓库。\n\n';
+      const about = `
+# 关于
+
+## MARKDOWN.HTML
+
+旨在提供低依赖、一键部署的 Markdown 网页渲染方案。
+
+详情请访问 [GitHub](https://github.com/PJ-568/MARKDOWN.HTML) 或 [Gitee](https://gitee.com/PJ-568/MARKDOWN.HTML) 仓库。
+
+`;
 
       // 加载动画相关
       var timer = null;
@@ -171,7 +180,9 @@
       }
 
       // 获取 markdown.html 当前所加载的 md 文件的所在路径
-      function getPath() { return getDirectory(window.location); };
+      function getPath() {
+        return getDirectory(window.location.href);
+      }
 
       // 将 ?p= 后面的值转换为绝对路径
       /* 
@@ -232,8 +243,8 @@
           } else if (notExistIndexPage === false) {
             path = currentPath + 'index.md';
           } else {
-            response = await fetch(getPath + 'index.md');
-            if (response.ok) {
+            response = await fetch(getPath() + 'index.md');
+            if (response.ok && response.headers.get('content-type').startsWith('text/markdown')) {
               notExistIndexPage = false;
               path = currentPath + 'index.md';
             } else {
@@ -245,7 +256,7 @@
         } else if (mdPath.endsWith('about.md')) {
           // 特殊处理 about.md
           response = await fetch(mdPath);
-          if (response.ok) {
+          if (response.ok && response.headers.get('content-type').startsWith('text/markdown')) {
             var r_text = await response.text();
             const content = about + await r_text.replace(/^# .*/m, '');
             response = {
@@ -262,7 +273,7 @@
               status: 200,
               statusText: '自生成。',
               text: async () => {
-                return about + '*无更多详细信息*\n';
+                return about + '*无更多详细信息*';
               }
             };
           }
@@ -323,8 +334,8 @@
 
         if (!response) {
           response = await fetch(mdPath);
-          if (!response.ok) {
-            throw new Error('请求失败：' + mdPath + '，' + response.status + '，' + response.statusText);
+          if (!response.ok && response.headers.get('content-type').startsWith('text/markdown')) {
+            throw new Error('请求失败：' + mdPath + '，' + response.headers.get('content-type') + '，' + response.status + '，' + response.statusText);
           }
         }
         var content = marked.parse(await response.text());
@@ -367,7 +378,10 @@
         // 覆写 PJAX 处理响应的函数，在内容插入页面之前实现 markdown 的渲染
         PJAX._handleResponse = PJAX.handleResponse;
         PJAX.handleResponse = async function (responseText, request, href, options) {
-          if (request.responseText.startsWith('<!doctype html><html><markdown-html') || request.responseText.startsWith('<!doctype html>\n\n<html>\n<markdown-html')) {
+          if (request.responseText.startsWith('<!doctype html><html><markdown-html') || request.responseText.startsWith(`<!doctype html>
+
+<html>
+<markdown-html`)) {
             await showMarkdown(await decodeMDPath(href));
           } else {
             PJAX._handleResponse(responseText, request, href, options);
