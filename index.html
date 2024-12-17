@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.6.5" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.6.6" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
@@ -221,9 +221,9 @@
       const isRelativePath = (path) => !path.startsWith('/');
 
       // 处理错误
-      async function handleError(errorMessage) {
+      function handleError(mdPath, errorMessage) {
         document.title = '加载失败'
-        document.querySelector('.markdown-body').innerHTML = `<h1>加载失败</h1><p>加载文档<code>${await getPValue()}</code>时出错：<code>${errorMessage}</code>。您可以尝试<a class="refresh-btn" href="">重新加载</a>或<a class="back-btn">返回</a>。</p>`;
+        document.querySelector('.markdown-body').innerHTML = `<h1>加载失败</h1><p>加载文档<code>${mdPath}</code>时出错：<code>${errorMessage}</code>。您可以尝试<a class="refresh-btn" href="">重新加载</a>或<a class="back-btn">返回</a>。</p>`;
         customPushState(window.location.origin + window.location.pathname + '?p=error.md');
         endLoad();
       }
@@ -287,7 +287,7 @@
           customPushState(window.location.origin + window.location.pathname + (mdPath ? ('?p=' + mdPath) : ''));
           showMarkdownEnded();
         } catch (error) {
-          handleError(error)
+          handleError((mdPath ? mdPath : path), error)
         }
       }
 
@@ -425,7 +425,7 @@
         try {
           await showMarkdown(await getPValue());
         } catch (error) {
-          handleError('初始化内容时出错：', error);
+          handleError(await getPValue(), '初始化内容时出错：' + error);
         }
       };
 
