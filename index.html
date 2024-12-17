@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.6.4" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.6.5" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
@@ -479,7 +479,7 @@
           darkmode.toggle();
         } else if (event.target.closest('.translate-switch')) {
           translate.changeLanguage(translate.language.getLocal());
-        } else if (event.target.closest('a[href^=#]')) {
+        } else if (event.target.closest('a[href^="#"]')) {
           // 目录平滑移动
           const href = event.target.getAttribute('href');
           if (href !== '#') {
