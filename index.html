@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.6.6" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.7.0" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
@@ -91,6 +91,19 @@
               '.markdown-body',
               '.pjax-reload'
             ],
+            switches: {
+              ".markdown-body": Pjax.switches.sideBySide
+            },
+            switchesOptions: {
+              ".markdown-body": {
+                classNames: {
+                  remove: "Animated Animated--reverse Animate--fast Animate--noDelay",
+                  add: "Animated",
+                  backward: "Animate--slideInRight",
+                  forward: "Animate--slideInLeft"
+                }
+              }
+            },
             cacheBust: false
           });
         } catch (e) {
@@ -221,10 +234,44 @@
       const isRelativePath = (path) => !path.startsWith('/');
 
       // 处理错误
+      function updateContent(article, title = null, mdPath = null) {
+        try {
+          document.querySelector('.markdown-body').innerHTML = `<div class="old-content Animated Animated-remove Animated--reverse Animate--fast Animate--noDelay Animate--slideInLeft">${document.querySelector('.markdown-body .content').innerHTML}</div><div class="content Animated Animate--slideInRight">${article}</div>`;
+          firstH1 = document.querySelector('.markdown-body .content h1');
+          document.title = title ? title : (firstH1 ? firstH1.textContent : mdPath);
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      // 等待动画结束
+      function waitForAnimationsEnd(parentElement, selector, animationNames) {
+        return new Promise(resolve => {
+          var completedCount = 0;
+          const elements = parentElement.querySelectorAll(selector);
+          const totalElements = elements.length;
+
+          const handleAnimationEnd = function (event) {
+            if (animationNames.includes(event.animationName) && Array.from(elements).includes(event.target)) {
+              completedCount++;
+              if (completedCount === totalElements) {
+                parentElement.removeEventListener('animationend', handleAnimationEnd);
+                resolve();
+              }
+            }
+          };
+
+          parentElement.addEventListener('animationend', handleAnimationEnd);
+        });
+      }
+
+      // 处理错误
       function handleError(mdPath, errorMessage) {
-        document.title = '加载失败'
-        document.querySelector('.markdown-body').innerHTML = `<h1>加载失败</h1><p>加载文档<code>${mdPath}</code>时出错：<code>${errorMessage}</code>。您可以尝试<a class="refresh-btn" href="">重新加载</a>或<a class="back-btn">返回</a>。</p>`;
+        updateContent(`<h1>加载失败</h1><p>加载文档<code>${mdPath}</code>时出错：<code>${errorMessage}</code>。您可以尝试<a class="refresh-btn" href="">重新加载</a>或<a class="back-btn">返回</a>。</p>`, '加载失败');
         customPushState(window.location.origin + window.location.pathname + '?p=error.md');
+        waitForAnimationsEnd(document.querySelector('.markdown-body'), '.content, .old-content', ['Animation-slideInRight', 'Animation-slideInLeft']).then(() => {
+          customPushState(window.location.origin + window.location.pathname + (mdPath ? ('?p=' + mdPath) : ''));
+        });
         endLoad();
       }
 
@@ -279,13 +326,12 @@
           }
         }
         try {
-          const content = await getMarkdown((mdPath ? mdPath : path), response);
-          document.querySelector('.markdown-body').innerHTML = content;
-          const firstH1 = document.querySelector('h1');
-          document.title = firstH1 ? firstH1.textContent : (mdPath ? mdPath : path);
+          updateContent(await getMarkdown((mdPath ? mdPath : path), response))
           document.querySelector('html').classList.add('loaded');	//// 防止缓存的页面被自定义 PJAX 中覆写的处理响应的函数捕获
-          customPushState(window.location.origin + window.location.pathname + (mdPath ? ('?p=' + mdPath) : ''));
           showMarkdownEnded();
+          waitForAnimationsEnd(document.querySelector('.markdown-body'), '.content, .old-content', ['Animation-slideInRight', 'Animation-slideInLeft']).then(() => {
+            customPushState(window.location.origin + window.location.pathname + (mdPath ? ('?p=' + mdPath) : ''));
+          });
         } catch (error) {
           handleError((mdPath ? mdPath : path), error)
         }
@@ -295,8 +341,9 @@
       const getMarkdown = async (mdPath, response = null) => {
         // 生成目录
         function generateOutline(doc) {
-          var outline = '<ul>';
           const headings = Array.from(doc.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+          if (headings.length === 0) return '<i>无目录</i>';
+          var outline = '<ul>';
           var stack = [];
 
           headings.forEach(heading => {
@@ -469,6 +516,16 @@
         await showMarkdown(await getPValue());
         initCustomPJAXEventListener();	//// 重新初始化自定义 PJAX 事件监听器
       });
+      //// 监听 animationend 事件
+      document.addEventListener('animationend', function handleAnimationEnd(event) {
+        if (event.animationName === 'Animation-slideInRight') {
+          const element = document.querySelector('.markdown-body .content');
+          element.classList.remove('Animated');
+          element.classList.remove('Animate--slideInRight');
+        } else if (event.animationName === 'Animation-slideInLeft') {
+          document.querySelector('.markdown-body .old-content').remove();
+        }
+      });
       //// 点击事件委托
       document.addEventListener('click', function (event) {
         if (event.target.closest('.back-btn')) {
@@ -565,6 +622,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      z-index: 1;
     }
 
     nav a {
@@ -580,8 +638,59 @@
       background-color: #212121;
     }
 
+    /* 动画 */
+    .Animated {
+      animation-fill-mode: both;
+      animation-duration: 1s;
+    }
+
+    .Animated-remove {
+      position: absolute;
+    }
+
+    .Animated--reverse {
+      animation-direction: reverse
+    }
+
+    .Animate--fast {
+      animation-duration: .5s
+    }
+
+    .Animate--noDelay {
+      animation-delay: 0s !important;
+    }
+
+    .Animate--slideInRight {
+      animation-name: Animation-slideInRight
+    }
+
+    @keyframes Animation-slideInRight {
+      0% {
+        transform: translateX(200%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    .Animate--slideInLeft {
+      animation-name: Animation-slideInLeft
+    }
+
+    @keyframes Animation-slideInLeft {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
     /* 主要内容 */
     .markdown-body {
+      position: relative;
       margin: 3rem auto;
       width: 100%;
       max-width: 950px;
@@ -590,8 +699,12 @@
       color: #212121;
       box-sizing: border-box;
       overflow-x: hidden;
-      padding: 30px;
       box-shadow: 0 2px 6px rgba(100, 100, 100, .3);
+    }
+
+    .markdown-body .content,
+    .markdown-body .old-content {
+      margin: 2rem;
     }
 
     .markdown-body img,
@@ -699,7 +812,7 @@
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 99999;
+      z-index: 2;
       opacity: 0;
       transition: opacity .4s linear;
 
@@ -727,7 +840,7 @@
     .translateSelectLanguage {
       background-color: #616161;
       color: inherit;
-      z-index: 10;
+      z-index: 3;
       width: 17%;
       height: 100%;
       opacity: 0;
@@ -746,7 +859,7 @@
 
     .darkmode-layer,
     .darkmode-toggle {
-      z-index: 2
+      z-index: 3
     }
 
     /* 小屏响应式优化 */
@@ -836,8 +949,10 @@
 
   <!-- 内容主体 -->
   <div class="markdown-body">
-    <h1>加载中……</h1>
-    <p>请稍等。</p>
+    <div class="content">
+      <h1>加载中……</h1>
+      <p>请稍等。</p>
+    </div>
   </div>
 
   <!-- 加载动画 -->
