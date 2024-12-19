@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.7.1" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.8.0" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
@@ -27,6 +27,55 @@
 `;
 
       // 加载动画相关
+      var loadingState = {
+        countLoading: 0
+      };
+      Object.defineProperty(loadingState, 'countLoading', {
+        get: function () {
+          return this._countLoading;
+        },
+        set: function (newValue) {
+          if (newValue < 0) {
+            newValue = 0;
+          }
+          const loadingBar = document.querySelector('.loading-bar');
+          const progress = document.querySelector('.loading-bar .progress');
+          if (this.countLoading === 0 && newValue > 0) {
+            var loadingBarWidth = 20;
+            var MAX_LOADING_WIDTH = 95;
+
+            loadingBar.classList.add('loading');
+            progress.style.width = loadingBarWidth + '%';
+
+            clearInterval(timer);
+            timer = setInterval(function () {
+              loadingBarWidth += 3;
+
+              if (loadingBarWidth > MAX_LOADING_WIDTH) {
+                loadingBarWidth = MAX_LOADING_WIDTH;
+              }
+
+              progress.style.width = loadingBarWidth + '%';
+            }, 500);
+          } else if (this.countLoading > 0 && newValue === 0) {
+            clearInterval(timer);
+            progress.style.width = '100%';
+            loadingBar.classList.remove('loading');
+
+            setTimeout(function () {
+              progress.style.width = 0;
+            }, 400);
+          }
+          this._countLoading = newValue;
+        }
+      });
+      loadingState.countLoading = 0;
+      function startLoad() {
+        loadingState.countLoading = loadingState.countLoading + 1;
+      }
+      function endLoad() {
+        loadingState.countLoading = loadingState.countLoading - 1;
+      }
       var timer = null;
 
       // 文档解析功能相关
@@ -46,45 +95,12 @@
       var level = 1;  // 当前页面的层级
       var lastLevel = 0;
 
-      // 开始加载动画
-      function startLoad() {
-        const loadingBar = document.querySelector('.loading-bar');
-        const progress = document.querySelector('.loading-bar .progress');
-        var loadingBarWidth = 20;
-        var MAX_LOADING_WIDTH = 95;
-
-        loadingBar.classList.add('loading');
-        progress.style.width = loadingBarWidth + '%';
-
-        clearInterval(timer);
-        timer = setInterval(function () {
-          loadingBarWidth += 3;
-
-          if (loadingBarWidth > MAX_LOADING_WIDTH) {
-            loadingBarWidth = MAX_LOADING_WIDTH;
-          }
-
-          progress.style.width = loadingBarWidth + '%';
-        }, 500);
-      }
-
-      // 停止加载动画
-      function endLoad() {
-        const loadingBar = document.querySelector('.loading-bar');
-        const progress = document.querySelector('.loading-bar .progress');
-        clearInterval(timer);
-        progress.style.width = '100%';
-        loadingBar.classList.remove('loading');
-
-        setTimeout(function () {
-          progress.style.width = 0;
-        }, 400);
-      }
-
       // 初始化 PJAX
       function initPJAX() {
         try {
-          const Pjax = window.Pjax || function () { };
+          const Pjax = window.Pjax || function () {
+            console.warn('Pjax 不存在？');
+          };
           PJAX = new Pjax({
             selectors: [
               'head title',
@@ -131,7 +147,6 @@
         try {
           const Darkmode = window.Darkmode || function () {
             console.warn('Darkmode.js 不存在？');
-            return;
           };
           darkmode = new Darkmode();
         } catch (e) {
@@ -504,9 +519,9 @@
       //// 网页加载完毕后触发初始化
       window.addEventListener('DOMContentLoaded', () => initialize());
       //// 翻译执行完成后触发
-      // translate.listener.renderTaskFinish = function (_task) {
-
-      // }
+      translate.listener.renderTaskFinish = function (_task) {
+        endLoad();
+      }
       //// PJAX 开始时执行的函数
       document.addEventListener('pjax:send', function () {
         startLoad();
