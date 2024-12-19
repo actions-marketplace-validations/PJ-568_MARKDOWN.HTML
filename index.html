@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.7.0" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.7.1" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
@@ -142,8 +142,8 @@
       //// 检查并提示翻译
       function infoTranslate() {
         try {
-          var currentLang = translate.language.getCurrent();
-          var originalLang = translate.language.getLocal();
+          const currentLang = translate.language.getCurrent();
+          const originalLang = translate.language.getLocal();
           if (currentLang !== originalLang) {
             const translateInfo = document.querySelectorAll('.translate-info');
             if (translateInfo) {
@@ -152,7 +152,6 @@
               })
             }
             // 获取 .markdown-body 元素
-            var mainElements = document.querySelector('.markdown-body');
             var bq = document.createElement('blockquote');
             bq.classList.add('translate-info');
 
@@ -169,7 +168,8 @@
             bq.appendChild(infoBody);
             bq.appendChild(switchButton);
 
-            mainElements.insertBefore(bq, mainElements.children[1]);
+            const mainElement = document.querySelector('.markdown-body .content');
+            mainElement.insertBefore(bq, mainElement.children[1]);
           }
         } catch (e) {
           console.error('检查并提示翻译出错：' + e);
@@ -328,8 +328,8 @@
         try {
           updateContent(await getMarkdown((mdPath ? mdPath : path), response))
           document.querySelector('html').classList.add('loaded');	//// 防止缓存的页面被自定义 PJAX 中覆写的处理响应的函数捕获
-          showMarkdownEnded();
-          waitForAnimationsEnd(document.querySelector('.markdown-body'), '.content, .old-content', ['Animation-slideInRight', 'Animation-slideInLeft']).then(() => {
+          waitForAnimationsEnd(document.querySelector('.markdown-body'), '.content, .old-content', ['Animation-slideInRight', 'Animation-slideInLeft']).then(async () => {
+            await showMarkdownEnded();
             customPushState(window.location.origin + window.location.pathname + (mdPath ? ('?p=' + mdPath) : ''));
           });
         } catch (error) {
@@ -553,7 +553,7 @@
         }
       });
       //// 文档内容加载完毕时触发
-      function showMarkdownEnded() {
+      async function showMarkdownEnded() {
         refreshTranslate();
         infoTranslate();	//// 检查并提示翻译
         translate.execute();	//// 手动触发翻译，但是理论上 translate-js 会监听页面变化
