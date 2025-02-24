@@ -1,12 +1,14 @@
 <!doctype html>
 
 <html>
-<markdown-html version="1.8.0" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
+<markdown-html version="1.8.1" author="PJ568" repo="https://github.com/PJ-568/markdown.html"
   license="CC BY-SA 4.0 International"></markdown-html>
 
 <head>
   <meta charset="utf-8">
   <meta name="description" content="HTML read markdown">
+  <meta name="keywords" content="markdown, html, renderer, low-dependency, one-click deployment">
+  <meta name="author" content="PJ568">
   <meta name="viewport" content="width=256, initial-scale=1">
   <script defer src="//lib.baomitu.com/marked/4.0.2/marked.min.js" type="text/javascript"></script>
   <script src="//lib.baomitu.com/pjax/0.2.8/pjax.min.js" type="text/javascript"></script>
@@ -113,7 +115,7 @@
             switchesOptions: {
               ".markdown-body": {
                 classNames: {
-                  remove: "Animated Animated--reverse Animate--fast Animate--noDelay",
+                  remove: "Animated Animated-remove Animated--reverse Animate--fast Animate--noDelay",
                   add: "Animated",
                   backward: "Animate--slideInRight",
                   forward: "Animate--slideInLeft"
@@ -404,7 +406,7 @@
         if (content === '') {
           content = '<i>空文件</i>';
         }
-        content = `<details class="outline"><summary><code>${decodeURIComponent(mdPath)}</code></summary></details><hr>${content}`;
+        content = `<details class="outline"><summary>${decodeURIComponent(mdPath)}</summary></details><hr>${content}`;
         const parser = new DOMParser();
         const doc = parser.parseFromString(content, 'text/html');
 
@@ -758,13 +760,17 @@
 
     .markdown-body code {
       font-family: "cousine nerd font mono", monospace;
-    }
-
-    .markdown-body p code {
       background-color: rgba(0, 0, 0, 0.05);
       font-size: small;
       padding: .2rem;
       border-radius: .1rem;
+    }
+
+    .markdown-body pre code {
+      background-color: unset;
+      font-size: unset;
+      padding: unset;
+      border-radius: unset;
     }
 
     .markdown-body blockquote {
@@ -781,14 +787,11 @@
     }
 
     .markdown-body summary {
+      font-size: small;
       cursor: pointer;
       background-color: rgba(0, 0, 0, 0.05);
       padding: .4rem;
       font-weight: bold;
-    }
-
-    .markdown-body summary code {
-      cursor: text;
     }
 
     .markdown-body details a {
