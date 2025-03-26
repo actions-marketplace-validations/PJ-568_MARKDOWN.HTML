@@ -27,7 +27,7 @@ runs:
     - name: Deploy minimized file
       run: |
         mkdir -p "${{ inputs.target-dir }}"
-        mv ${{ github.action_path }}/index.min.html "${{ inputs.target-dir }}/index.html"
+        cp -uv ${{ github.action_path }}/index.min.html "${{ inputs.target-dir }}/index.html"
       shell: bash
 
 branding:
