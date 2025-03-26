@@ -15,8 +15,19 @@ This project aims to provide a low-dependency, simple deployment solution for re
 
 ## Usage
 
+### Manual Deployment
+
 1. Download and rename the `index.html` file from this repository and place to your website's root directory or any other directory;
 2. When the html file is accessed, it will automatically render the `index.md` in the same directory. If `index.md` does not exist, it will render `README.md`.
+
+### Github Actions
+
+```yaml
+- name: Deploy markdown.html
+  uses: PJ-568/MARKDOWN.HTML@v1.9.0
+  with:
+    target-dir: '.'
+```
 
 ## Additional Notes
 

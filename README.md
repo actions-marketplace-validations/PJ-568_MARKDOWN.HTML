@@ -15,8 +15,19 @@
 
 ## 使用方法
 
+### 手动部署
+
 1. 下载并重命名本仓库的 `index.html` 文件到你的网站根目录或任何其他目录中；
 2. 当下载并重命名后的 `index.html` 被访问时，将自动渲染同目录下的 `index.md`，如果 `index.md` 不存在，则渲染 `README.md`。
+
+### Github Actions
+
+```yaml
+- name: Deploy markdown.html
+  uses: PJ-568/MARKDOWN.HTML@v1.9.0
+  with:
+    target-dir: '.'
+```
 
 ## 其他说明
 
