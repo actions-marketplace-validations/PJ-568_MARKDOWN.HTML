@@ -7,6 +7,8 @@ This project aims to provide a low-dependency, simple deployment solution for re
 ## Features
 
 - **Low dependencies**: Only an HTML file, a small number of CDNs, and server programs are required to complete Markdown pages rendering.
+- **Markdown support**: Renders Markdown files into HTML.
+- **Mermaid support**: Renders Mermaid syntax in Markdown into diagrams.
 - **Multilingual support**: Supports machine translation between multiple languages.
 - **Dark mode support**: Supports light, dark, and system-following modes.
 - **Pjax support**: Supports page navigation without refreshing the whole page.
